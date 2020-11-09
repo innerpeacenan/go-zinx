@@ -2,6 +2,7 @@ package znet
 
 import (
 	"fmt"
+	"go-zinx/conf"
 	"go-zinx/ziface"
 	"net"
 	"time"
@@ -17,10 +18,10 @@ type Server struct {
 
 func NewServer(name string) ziface.IServer {
 	s := &Server{
-		Name:      name,
+		Name:      conf.ConfigInstance.Name,
 		IPVersion: "tcp4",
-		IP:        "0.0.0.0",
-		Port:      7777,
+		IP:        conf.ConfigInstance.Host,
+		Port:      conf.ConfigInstance.TcpPort,
 		Router:    nil,
 	}
 
