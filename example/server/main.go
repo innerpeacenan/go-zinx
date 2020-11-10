@@ -11,7 +11,7 @@ type PingRouter struct {
 }
 
 func (p *PingRouter) Handle(request ziface.IRequest) {
-	fmt.Println("recv from client : msgId = ", request.GetMsgId(), "data = ", string(request.GetData()))
+	fmt.Println("recv from client : msgId = ", request.GetMsgID(), "data = ", string(request.GetData()))
 	err := request.GetConnection().SendMsg(1, []byte("ping..ping..ping"))
 	if err != nil {
 		fmt.Println(err)
@@ -19,7 +19,7 @@ func (p *PingRouter) Handle(request ziface.IRequest) {
 }
 
 func main() {
-	s := znet.NewServer("[zinx v5.0]")
+	s := znet.NewServer()
 	s.AddRouter(&PingRouter{})
 	s.Serve()
 }

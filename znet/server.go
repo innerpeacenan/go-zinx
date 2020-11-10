@@ -16,7 +16,7 @@ type Server struct {
 	Router    ziface.IRouter
 }
 
-func NewServer(name string) ziface.IServer {
+func NewServer() ziface.IServer {
 	s := &Server{
 		Name:      conf.ConfigInstance.Name,
 		IPVersion: "tcp4",
@@ -29,8 +29,6 @@ func NewServer(name string) ziface.IServer {
 }
 
 func (s *Server) Start() {
-	fmt.Printf("[START] Server listenner at IP: %s, Port %d, is starting\n", s.IP, s.Port)
-
 	go func() {
 		addr, err := net.ResolveTCPAddr(s.IPVersion, fmt.Sprintf("%s:%d", s.IP, s.Port))
 		if err != nil {

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"go-zinx/ziface"
 	"io/ioutil"
+	"os"
 )
 
 var (
@@ -18,10 +19,15 @@ type Config struct {
 	Version       string         //当前Zinx版本号
 	MaxPacketSize uint32         //都需数据包的最大值
 	MaxConn       int            //当前服务器主机允许的最大链接个数
+	ConfFilePath  string
 }
 
 func (g *Config) Reload() {
-	data, err := ioutil.ReadFile("../conf/config.json")
+	if confFileExists, _ := PathExists(g.ConfFilePath); confFileExists != true {
+		return
+	}
+
+	data, err := ioutil.ReadFile(g.ConfFilePath)
 	if err != nil {
 		panic(err)
 	}
@@ -29,6 +35,17 @@ func (g *Config) Reload() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func PathExists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
 }
 
 func init() {
@@ -40,6 +57,7 @@ func init() {
 		Host:          "0.0.0.0",
 		MaxConn:       12000,
 		MaxPacketSize: 4096,
+		ConfFilePath:  "../conf/zinx.json",
 	}
-	ConfigInstance.Reload()
+	//ConfigInstance.Reload()
 }
