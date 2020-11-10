@@ -41,5 +41,5 @@ func init() {
 		MaxConn:       12000,
 		MaxPacketSize: 4096,
 	}
-	ConfigInstance.Reload()
+	//ConfigInstance.Reload()
 }
