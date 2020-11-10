@@ -2,5 +2,6 @@
   "Name": "zinx v0.4",
   "Host": "0.0.0.0",
   "TcpPort": 8899,
-  "MaxConn": 10
+  "MaxConn": 10,
+  "MaxPacketSize": 4096
 }

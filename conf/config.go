@@ -21,7 +21,7 @@ type Config struct {
 }
 
 func (g *Config) Reload() {
-	data, err := ioutil.ReadFile("conf/config.json")
+	data, err := ioutil.ReadFile("../conf/config.json")
 	if err != nil {
 		panic(err)
 	}
@@ -35,11 +35,11 @@ func init() {
 	// default
 	ConfigInstance = &Config{
 		Name:          "ZinxServerApp",
-		Version:       "V0.4",
+		Version:       "V0.5",
 		TcpPort:       7777,
 		Host:          "0.0.0.0",
 		MaxConn:       12000,
 		MaxPacketSize: 4096,
 	}
-	//ConfigInstance.Reload()
+	ConfigInstance.Reload()
 }

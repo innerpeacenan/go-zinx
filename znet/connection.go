@@ -1,8 +1,10 @@
 package znet
 
 import (
+	"errors"
 	"fmt"
 	"go-zinx/ziface"
+	"io"
 	"net"
 )
 
@@ -32,17 +34,27 @@ func (c *Connection) StartReader() {
 	defer c.Stop()
 
 	for {
-		//读取512字节
-		buf := make([]byte, 512)
-		_, err := c.Conn.Read(buf)
-		if err != nil {
-			fmt.Println("recv buf err ", err)
-			c.ExitBuffChan <- true
-			continue
+		dp := NewDataPack()
+		headData := make([]byte, dp.GetHeadLen())
+		if _, err := io.ReadFull(c.GetTCPConnection(), headData); err != nil {
+			fmt.Println("read msg head ", err)
 		}
+		msg, err := dp.Unpack(headData)
+		if err != nil {
+			fmt.Println("unpack error", err)
+			return
+		}
+		data := make([]byte, msg.GetDataLen())
+		if msg.GetDataLen() > 0 {
+			data := make([]byte, msg.GetDataLen())
+			if _, err = io.ReadFull(c.GetTCPConnection(), data); err != nil {
+				fmt.Println("read msg data error ", err)
+			}
+		}
+		msg.SetData(data)
 		req := Request{
 			conn: c,
-			data: buf,
+			msg:  msg,
 		}
 		go func(request ziface.IRequest) {
 			c.Router.PreHandle(request)
@@ -107,12 +119,24 @@ func (c *Connection) RemoteAddr() net.Addr {
 	return c.Conn.RemoteAddr()
 }
 
-//直接将数据发送数据给远程的TCP客户端
-func (c *Connection) Send(data []byte) error {
+//将数据发送给缓冲队列，通过专门从缓冲队列读数据的go写给客户端
+func (c *Connection) SendBuff(data []byte) error {
 	return nil
 }
 
-//将数据发送给缓冲队列，通过专门从缓冲队列读数据的go写给客户端
-func (c *Connection) SendBuff(data []byte) error {
+func (c *Connection) SendMsg(msgId uint32, data []byte) error {
+	if c.isClosed == true {
+		return errors.New("Connection closed when send msg")
+	}
+	// 封包
+	dp := NewDataPack()
+	binaryMsg, err := dp.Pack(NewMsgPackage(msgId, data))
+	if err != nil {
+		fmt.Println("Pack error msg id = ", msgId)
+		return errors.New("Pack error msg")
+	}
+	if _, err = c.Conn.Write(binaryMsg); err != nil {
+		fmt.Println("Write error ", err)
+	}
 	return nil
 }

@@ -8,7 +8,7 @@ type IConnection interface {
 	GetTCPConnection() *net.TCPConn
 	GetConnID() uint32
 	RemoteAddr() net.Addr
-	Send(data []byte) error
+	SendMsg(msgId uint32, data []byte) error
 	SendBuff(data []byte) error
 }
 
