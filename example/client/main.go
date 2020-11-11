@@ -9,10 +9,9 @@ import (
 )
 
 func main() {
-	fmt.Println("Client start ... ")
 	conn, err := net.Dial("tcp", "127.0.0.1:7777")
 	if err != nil {
-		fmt.Println("client start err, exit!")
+		fmt.Println("client start err, exit!",err)
 		return
 	}
 	for {

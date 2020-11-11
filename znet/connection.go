@@ -22,10 +22,6 @@ type Connection struct {
 	//告知该链接已经退出/停止的channel
 	ExitBuffChan chan bool
 
-	//给缓冲队列发送数据的channel，
-	// 如果向缓冲队列发送数据，那么把数据发送到这个channel下
-	//	SendBuffChan chan []byte
-
 }
 
 //创建连接的方法
@@ -42,7 +38,6 @@ func NewConntion(conn *net.TCPConn, connID uint32, router ziface.IRouter) *Conne
 }
 
 func (c *Connection) StartReader() {
-	fmt.Println("Reader Goroutine is  running")
 	defer fmt.Println(c.RemoteAddr().String(), " conn reader exit!")
 	defer c.Stop()
 
@@ -85,17 +80,11 @@ func (c *Connection) StartReader() {
 		}
 		//从路由Routers 中找到注册绑定Conn的对应Handle
 		go func(request ziface.IRequest) {
-			//执行注册的路由方法
 			c.Router.PreHandle(request)
 			c.Router.Handle(request)
 			c.Router.PostHandle(request)
 		}(&req)
 
-		//if err := c.handleAPI(c.Conn, buf, cnt); err !=nil {
-		//	fmt.Println("connID ", c.ConnID, " handle is error")
-		//	c.ExitBuffChan <- true
-		//	return
-		//}
 	}
 }
 
