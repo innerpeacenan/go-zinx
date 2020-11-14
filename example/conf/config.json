@@ -4,5 +4,6 @@
   "TcpPort": 8899,
   "Host": "0.0.0.0",
   "MaxConn": 10,
-  "MaxPacketSize": 4096
+  "MaxPacketSize": 4096,
+  "MaxMsgChanLen": 100
 }

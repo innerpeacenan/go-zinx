@@ -11,14 +11,15 @@ var (
 )
 
 type Config struct {
-	Name             string //当前服务器名称
-	Version          string //当前Zinx版本号
-	TcpPort          int    //当前服务器主机监听端口号
-	Host             string //当前服务器主机IP
-	MaxConn          int    //当前服务器主机允许的最大链接个数
-	MaxPacketSize    uint32 //都需数据包的最大值
-	WorkerPoolSize   uint32 //业务工作Worker池的数量
-	MaxWorkerTaskLen uint32 //业务工作Worker对应负责的任务队列最大任务存储数量
+	Name             string
+	Version          string
+	TcpPort          int
+	Host             string
+	MaxConn          int
+	MaxPacketSize    uint32
+	WorkerPoolSize   uint32
+	MaxMsgChanLen    uint32
+	MaxWorkerTaskLen uint32
 	ConfFilePath     string
 }
 
@@ -57,6 +58,7 @@ func init() {
 		MaxConn:          12000,
 		MaxPacketSize:    4096,
 		WorkerPoolSize:   10,
+		MaxMsgChanLen:    100,
 		MaxWorkerTaskLen: 1024,
 		ConfFilePath:     "../conf/zinx.json",
 	}

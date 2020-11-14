@@ -1,9 +1,13 @@
 package ziface
 
-//定义服务器接口
 type IServer interface {
 	Start()
 	Stop()
 	Serve()
 	AddRouter(msgId uint32, router IRouter)
+	GetConnMgr() IConnManager
+	SetOnConnStart(func(IConnection))
+	SetOnConnStop(func(IConnection))
+	CallOnConnStart(conn IConnection)
+	CallOnConnStop(conn IConnection)
 }
