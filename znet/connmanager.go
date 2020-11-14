@@ -2,7 +2,6 @@ package znet
 
 import (
 	"errors"
-	"fmt"
 	"go-zinx/ziface"
 	"sync"
 )
@@ -19,12 +18,9 @@ func NewConnManager() *ConnManager {
 }
 
 func (connMgr *ConnManager) Add(conn ziface.IConnection) {
-
 	connMgr.connLock.Lock()
 	defer connMgr.connLock.Unlock()
-
 	connMgr.connections[conn.GetConnID()] = conn
-	fmt.Println("connection add to ConnManager successfully: conn num = ", connMgr.Len())
 }
 
 func (connMgr *ConnManager) Remove(conn ziface.IConnection) {
@@ -33,7 +29,6 @@ func (connMgr *ConnManager) Remove(conn ziface.IConnection) {
 	defer connMgr.connLock.Unlock()
 
 	delete(connMgr.connections, conn.GetConnID())
-	fmt.Println("connection Remove ConnID=", conn.GetConnID(), " successfully: conn num = ", connMgr.Len())
 }
 
 func (connMgr *ConnManager) Get(connID uint32) (ziface.IConnection, error) {
@@ -62,5 +57,4 @@ func (connMgr *ConnManager) ClearConn() {
 
 		delete(connMgr.connections, connID)
 	}
-	fmt.Println("Clear All Connections successfully: conn num = ", connMgr.Len())
 }

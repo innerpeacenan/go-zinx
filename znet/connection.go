@@ -7,6 +7,7 @@ import (
 	"go-zinx/ziface"
 	"io"
 	"net"
+	"sync"
 )
 
 type Connection struct {
@@ -18,6 +19,8 @@ type Connection struct {
 	ExitBuffChan chan bool
 	msgBuffChan  chan []byte
 	msgChan      chan []byte
+	property     map[string]interface{}
+	propertyLock sync.RWMutex
 }
 
 func NewConntion(server ziface.IServer, conn *net.TCPConn, connID uint32, msgHandler ziface.IMsgHandle) *Connection {
@@ -30,13 +33,13 @@ func NewConntion(server ziface.IServer, conn *net.TCPConn, connID uint32, msgHan
 		ExitBuffChan: make(chan bool, 1),
 		msgChan:      make(chan []byte),
 		msgBuffChan:  make(chan []byte, conf.ConfigInstance.MaxMsgChanLen),
+		property:     make(map[string]interface{}),
 	}
 	c.TcpServer.GetConnMgr().Add(c)
 	return c
 }
 
 func (c *Connection) StartReader() {
-	defer fmt.Println(c.RemoteAddr().String(), " conn reader exit!")
 	defer c.Stop()
 
 	for {
@@ -81,8 +84,6 @@ func (c *Connection) StartReader() {
 }
 
 func (c *Connection) StartWriter() {
-	fmt.Println("[Writer Goroutine is running]")
-	defer fmt.Println(c.RemoteAddr().String(), "[conn Writer exit!]")
 	for {
 		select {
 		case data := <-c.msgChan:
@@ -98,7 +99,6 @@ func (c *Connection) StartWriter() {
 				}
 			} else {
 				break
-				fmt.Println("msgBuffChan is Closed")
 			}
 		case <-c.ExitBuffChan:
 			return
@@ -111,6 +111,9 @@ func (c *Connection) Start() {
 	go c.StartReader()
 	go c.StartWriter()
 	c.TcpServer.CallOnConnStart(c)
+	for range c.ExitBuffChan {
+		c.Stop()
+	}
 }
 
 func (c *Connection) Stop() {
@@ -172,4 +175,26 @@ func (c *Connection) SendBuffMsg(msgId uint32, data []byte) error {
 
 	c.msgBuffChan <- msg
 	return nil
+}
+
+func (c *Connection) SetProperty(key string, value interface{}) {
+	c.propertyLock.Lock()
+	defer c.propertyLock.Unlock()
+	c.property[key] = value
+}
+
+func (c *Connection) GetProperty(key string) (interface{}, error) {
+	c.propertyLock.RLock()
+	defer c.propertyLock.RUnlock()
+	if value, ok := c.property[key]; ok {
+		return value, nil
+	} else {
+		return nil, errors.New("no property found")
+	}
+}
+
+func (c *Connection) RemoveProperty(key string) {
+	c.propertyLock.Lock()
+	defer c.propertyLock.Unlock()
+	delete(c.property, key)
 }

@@ -24,7 +24,6 @@ func NewMsgHandle() *MsgHandle {
 func (mh *MsgHandle) DoMsgHandler(request ziface.IRequest) {
 	handler, ok := mh.Apis[request.GetMsgID()]
 	if !ok {
-		fmt.Println("api msgId = ", request.GetMsgID(), " is not FOUND!")
 		return
 	}
 
@@ -40,7 +39,6 @@ func (mh *MsgHandle) AddRouter(msgId uint32, router ziface.IRouter) {
 	}
 
 	mh.Apis[msgId] = router
-	fmt.Println("Add api msgId = ", msgId)
 }
 
 func (mh *MsgHandle) StartOneWorker(workerID int, taskQueue chan ziface.IRequest) {
@@ -66,9 +64,6 @@ func (mh *MsgHandle) StartWorkerPool() {
 }
 
 func (mh *MsgHandle) SendMsgToTaskQueue(request ziface.IRequest) {
-
 	workerID := request.GetConnection().GetConnID() % mh.WorkerPoolSize
-	fmt.Println("Add ConnID=", request.GetConnection().GetConnID(), " request msgID=", request.GetMsgID(), "to workerID=", workerID)
-
 	mh.TaskQueue[workerID] <- request
 }

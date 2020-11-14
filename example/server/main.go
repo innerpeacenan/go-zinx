@@ -34,6 +34,8 @@ func (this *HelloZinxRouter) Handle(request ziface.IRequest) {
 
 func DoConnectionBegin(conn ziface.IConnection) {
 	fmt.Println("DoConnecionBegin is Called ... ")
+	conn.SetProperty("Name", "Aceld")
+	conn.SetProperty("Home", "https://www.jianshu.com/u/35261429b7f1")
 	err := conn.SendMsg(2, []byte("DoConnection BEGIN..."))
 	if err != nil {
 		fmt.Println(err)
@@ -41,6 +43,13 @@ func DoConnectionBegin(conn ziface.IConnection) {
 }
 
 func DoConnectionLost(conn ziface.IConnection) {
+	if name, err := conn.GetProperty("Name"); err == nil {
+		fmt.Println("Conn Property Name = ", name)
+	}
+	if home, err := conn.GetProperty("Home"); err == nil {
+		fmt.Println("Conn Property Home = ", home)
+	}
+
 	fmt.Println("DoConneciotnLost is Called ... ")
 }
 

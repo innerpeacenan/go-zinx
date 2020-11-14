@@ -47,8 +47,6 @@ func (s *Server) Start() {
 			return
 		}
 
-		fmt.Println("start Zinx server  ", s.Name, " succ, now listenning...")
-
 		var cid uint32
 		cid = 0
 
