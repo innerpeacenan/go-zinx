@@ -11,12 +11,12 @@ import (
 func main() {
 	conn, err := net.Dial("tcp", "127.0.0.1:7777")
 	if err != nil {
-		fmt.Println("client start err, exit!",err)
+		fmt.Println("client start err, exit!", err)
 		return
 	}
 	for {
 		dp := znet.NewDataPack()
-		binaryMsg, err := dp.Pack(znet.NewMsgPackage(0, []byte("zinx client test msg")))
+		binaryMsg, err := dp.Pack(znet.NewMsgPackage(1, []byte("zinx client test msg")))
 		if err != nil {
 			fmt.Println("Pack error:", err)
 			return

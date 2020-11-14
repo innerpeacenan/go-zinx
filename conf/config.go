@@ -59,5 +59,5 @@ func init() {
 		MaxPacketSize: 4096,
 		ConfFilePath:  "../conf/zinx.json",
 	}
-	//ConfigInstance.Reload()
+	ConfigInstance.Reload()
 }
