@@ -2,7 +2,6 @@ package conf
 
 import (
 	"encoding/json"
-	"go-zinx/ziface"
 	"io/ioutil"
 	"os"
 )
@@ -12,14 +11,15 @@ var (
 )
 
 type Config struct {
-	TcpServer     ziface.IServer //当前Zinx的全局Server对象
-	Host          string         //当前服务器主机IP
-	TcpPort       int            //当前服务器主机监听端口号
-	Name          string         //当前服务器名称
-	Version       string         //当前Zinx版本号
-	MaxPacketSize uint32         //都需数据包的最大值
-	MaxConn       int            //当前服务器主机允许的最大链接个数
-	ConfFilePath  string
+	Name             string //当前服务器名称
+	Version          string //当前Zinx版本号
+	TcpPort          int    //当前服务器主机监听端口号
+	Host             string //当前服务器主机IP
+	MaxConn          int    //当前服务器主机允许的最大链接个数
+	MaxPacketSize    uint32 //都需数据包的最大值
+	WorkerPoolSize   uint32 //业务工作Worker池的数量
+	MaxWorkerTaskLen uint32 //业务工作Worker对应负责的任务队列最大任务存储数量
+	ConfFilePath     string
 }
 
 func (g *Config) Reload() {
@@ -49,15 +49,16 @@ func PathExists(path string) (bool, error) {
 }
 
 func init() {
-	// default
 	ConfigInstance = &Config{
-		Name:          "ZinxServerApp",
-		Version:       "V0.5",
-		TcpPort:       7777,
-		Host:          "0.0.0.0",
-		MaxConn:       12000,
-		MaxPacketSize: 4096,
-		ConfFilePath:  "../conf/zinx.json",
+		Name:             "ZinxServerApp",
+		Version:          "V0.5",
+		TcpPort:          7777,
+		Host:             "0.0.0.0",
+		MaxConn:          12000,
+		MaxPacketSize:    4096,
+		WorkerPoolSize:   10,
+		MaxWorkerTaskLen: 1024,
+		ConfFilePath:     "../conf/zinx.json",
 	}
 	ConfigInstance.Reload()
 }

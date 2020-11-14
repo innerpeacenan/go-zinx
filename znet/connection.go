@@ -3,6 +3,7 @@ package znet
 import (
 	"errors"
 	"fmt"
+	"go-zinx/conf"
 	"go-zinx/ziface"
 	"io"
 	"net"
@@ -71,8 +72,11 @@ func (c *Connection) StartReader() {
 			conn: c,
 			msg:  msg,
 		}
-		//从路由Routers 中找到注册绑定Conn的对应Handle
-		go c.MsgHandler.DoMsgHandler(&req)
+		if conf.ConfigInstance.WorkerPoolSize > 0 {
+			c.MsgHandler.SendMsgToTaskQueue(&req)
+		} else {
+			go c.MsgHandler.DoMsgHandler(&req)
+		}
 
 	}
 }

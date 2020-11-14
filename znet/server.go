@@ -30,6 +30,7 @@ func NewServer() ziface.IServer {
 
 func (s *Server) Start() {
 	go func() {
+		s.msgHandler.StartWorkerPool()
 		addr, err := net.ResolveTCPAddr(s.IPVersion, fmt.Sprintf("%s:%d", s.IP, s.Port))
 		if err != nil {
 			fmt.Println("resolve tcp addr err: ", err)
